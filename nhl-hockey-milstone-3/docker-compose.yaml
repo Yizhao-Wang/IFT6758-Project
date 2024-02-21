@@ -1,0 +1,24 @@
+version : '2'
+services:  
+        flask-service:
+                build :
+                        context : .
+                        dockerfile : Dockerfile.serving
+                image : flask-container:v1
+                environment:
+                        - COMET_API_KEY = t91E2g8sl4OZwJJkmeZtOGxLv
+                ports:
+                        -  '8083:8083'
+         
+        streamlit-service:
+                build :
+                        context : .
+                        dockerfile : Dockerfile.streamlit
+                image : streamlit-container:v1
+                command: 
+                        - /bin/bash -c "echo streamlit-service"
+                environment:
+                        - COMET_API_KEY = t91E2g8sl4OZwJJkmeZtOGxLv
+                ports:
+                        -  '8090:8090'
+        

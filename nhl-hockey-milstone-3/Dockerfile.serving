@@ -1,0 +1,44 @@
+# To build a container, you will use the docker build command
+# https://docs.docker.com/engine/reference/commandline/build/
+#
+#   docker build -t <IMAGE TAG> -f Dockerfile.serving .
+#   docker build -t <IMAGE TAG> -f Dockerfile.jupyter .
+#
+
+
+# https://docs.docker.com/engine/reference/builder/#from
+# You shouldn't need to change this
+FROM python:3.8
+
+# Setting a default value for COMET_API_KEY. This will be set during build time.
+# ENV COMET_API_KEY=None
+ENV COMET_API_KEY t91E2g8sl4OZwJJkmeZtOGxLv
+# https://docs.docker.com/engine/reference/builder/#workdir
+# Create and cd into /code as your working directory
+WORKDIR /code
+
+ADD app.py /code
+
+ADD project_constants.py /code
+
+ADD requirements.txt /code
+
+# ADD entry-point-script.sh /code
+
+COPY ./ift6758/ /code/ift6758/
+COPY ./models/ /code/models/
+
+
+EXPOSE 8083
+# These commands get run in the working directory
+RUN pip install --upgrade pip
+RUN pip install waitress
+RUN pip install -r requirements.txt
+CMD waitress-serve --listen=0.0.0.0:8083 app:app
+
+
+
+
+
+
+

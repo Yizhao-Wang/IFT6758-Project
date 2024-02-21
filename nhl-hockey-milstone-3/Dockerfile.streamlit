@@ -1,0 +1,37 @@
+# To build a container, you will use the docker build command
+# https://docs.docker.com/engine/reference/commandline/build/
+#
+#   docker build -t <IMAGE TAG> -f Dockerfile.serving .
+#   docker build -t <IMAGE TAG> -f Dockerfile.jupyter .
+#
+
+
+# https://docs.docker.com/engine/reference/builder/#from
+# You shouldn't need to change this
+FROM python:3.8
+
+# Setting a default value for COMET_API_KEY. This will be set during build time.
+ENV COMET_API_KEY t91E2g8sl4OZwJJkmeZtOGxLv
+# ENV COMET_API_KEY=None
+# https://docs.docker.com/engine/reference/builder/#workdir
+# Create and cd into /code as your working directory
+WORKDIR /code
+
+ADD streamlit.py /code
+ADD app.py /code
+ADD requirements.txt /code
+COPY ./ift6758/ift6758/client/game_client.py /code
+COPY ./ift6758/ift6758/client/param_dict.pkl /code
+COPY ./ift6758/ift6758/client/penalty_tracker.py /code
+COPY ./ift6758/ift6758/client/serving_client.py /code
+COPY ./ift6758/ift6758/client/tidy_features.py /code
+COPY ./ift6758/ /code/ift6758/
+
+EXPOSE 8090
+# These commands get run in the working directory
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+RUN pip install streamlit
+ENTRYPOINT ["streamlit", "run", "streamlit.py", "--server.port=8090", "--server.address=0.0.0.0"]
+
+
